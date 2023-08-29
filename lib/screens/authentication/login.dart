@@ -105,7 +105,9 @@ class _LoginState extends State<Login> {
                           padding: const EdgeInsets.only(top: 20, bottom: 20),
                           child: GestureDetector(
                             //Sign in with google
-                            onTap: () {},
+                            onTap: () async {
+                              await _auth.googleSignIn();
+                            },
                             child: Image.asset(
                               "assets/google.png",
                               height: 50,

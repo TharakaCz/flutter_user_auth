@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_user_auth/models/UserModel.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthServices {
   //firebase instanse
@@ -19,6 +20,26 @@ class AuthServices {
   Future signInAnonimously() async {
     try {
       UserCredential result = await _auth.signInAnonymously();
+      User? user = result.user;
+      return _userWithFirebaseUserUid(user);
+    } catch (err) {
+      print(err.toString());
+      return null;
+    }
+  }
+
+//Google Signin
+  Future googleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      UserCredential result =
+          await FirebaseAuth.instance.signInWithCredential(credential);
       User? user = result.user;
       return _userWithFirebaseUserUid(user);
     } catch (err) {
