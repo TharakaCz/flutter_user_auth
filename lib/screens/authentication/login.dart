@@ -5,7 +5,9 @@ import 'package:flutter_user_auth/constants/styles.dart';
 import 'package:flutter_user_auth/services/auth.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  //function
+  final Function toggle;
+  const Login({super.key, required this.toggle});
 
   @override
   State<Login> createState() => _LoginState();
@@ -20,6 +22,7 @@ class _LoginState extends State<Login> {
 //email password state
   String email = "";
   String password = "";
+  String error = "";
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +58,7 @@ class _LoginState extends State<Login> {
                     children: [
                       //email
                       TextFormField(
+                        style: const TextStyle(color: Colors.white),
                         decoration: textInputDecoration,
                         validator: (val) =>
                             val?.isEmpty == true ? "Enter a valid email" : null,
@@ -69,6 +73,8 @@ class _LoginState extends State<Login> {
                       ),
                       //password
                       TextFormField(
+                        obscureText: true,
+                        style: const TextStyle(color: Colors.white),
                         decoration:
                             textInputDecoration.copyWith(hintText: "Password"),
                         validator: (val) =>
@@ -78,6 +84,13 @@ class _LoginState extends State<Login> {
                             password = val;
                           });
                         },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        error,
+                        style: const TextStyle(color: Colors.red),
                       ),
                       //goole
                       const SizedBox(
@@ -113,7 +126,9 @@ class _LoginState extends State<Login> {
                           ),
                           GestureDetector(
                             //go to thr register page
-                            onTap: () {},
+                            onTap: () {
+                              widget.toggle();
+                            },
                             child: const Text(
                               "REGISTER",
                               style: TextStyle(
@@ -129,7 +144,15 @@ class _LoginState extends State<Login> {
                       ),
                       //button
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () async {
+                          dynamic result = await _auth
+                              .signInWithEmailAndPassword(email, password);
+                          if (result == null) {
+                            setState(() {
+                              error = "User Credentiols Not Found";
+                            });
+                          }
+                        },
                         child: Container(
                           height: 40,
                           width: 200,
@@ -151,7 +174,9 @@ class _LoginState extends State<Login> {
                         height: 15,
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () async {
+                          await _auth.signInAnonimously();
+                        },
                         child: Container(
                           height: 40,
                           width: 200,

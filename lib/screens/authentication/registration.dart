@@ -5,7 +5,8 @@ import 'package:flutter_user_auth/constants/styles.dart';
 import 'package:flutter_user_auth/services/auth.dart';
 
 class Registration extends StatefulWidget {
-  const Registration({super.key});
+  final Function toggle;
+  const Registration({super.key, required this.toggle});
 
   @override
   State<Registration> createState() => _RegistrationState();
@@ -20,6 +21,7 @@ class _RegistrationState extends State<Registration> {
 //email password state
   String email = "";
   String password = "";
+  String error = "";
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +57,7 @@ class _RegistrationState extends State<Registration> {
                     children: [
                       //email
                       TextFormField(
+                        style: const TextStyle(color: Colors.white),
                         decoration: textInputDecoration,
                         validator: (val) =>
                             val?.isEmpty == true ? "Enter a valid email" : null,
@@ -69,6 +72,8 @@ class _RegistrationState extends State<Registration> {
                       ),
                       //password
                       TextFormField(
+                        obscureText: true,
+                        style: const TextStyle(color: Colors.white),
                         decoration:
                             textInputDecoration.copyWith(hintText: "Password"),
                         validator: (val) =>
@@ -79,10 +84,17 @@ class _RegistrationState extends State<Registration> {
                           });
                         },
                       ),
-                      //goole
                       const SizedBox(
                         height: 10,
                       ),
+                      Text(
+                        error,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      //goole
                       const Text(
                         "Login with goole account",
                         style: descriptionStyle,
@@ -112,8 +124,10 @@ class _RegistrationState extends State<Registration> {
                             width: 10,
                           ),
                           GestureDetector(
-                            //go to thr register page
-                            onTap: () {},
+                            //go to the register page
+                            onTap: () {
+                              widget.toggle();
+                            },
                             child: const Text(
                               "LOGIN",
                               style: TextStyle(
@@ -129,7 +143,16 @@ class _RegistrationState extends State<Registration> {
                       ),
                       //button
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () async {
+                          dynamic result = await _auth
+                              .registerWithEmailAndPassword(email, password);
+                          if (result == null) {
+                            //error
+                            setState(() {
+                              error = "Pleace Enter a valid email!";
+                            });
+                          }
+                        },
                         child: Container(
                           height: 40,
                           width: 200,
